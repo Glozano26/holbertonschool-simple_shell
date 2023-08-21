@@ -50,7 +50,7 @@ int main()
                         /* Analiza la línea de comandos en argumentos */
                         int i = 0;
                         args[i] = strtok(line, " ");
-                        while (args[i] != NULL) {
+                        while (args[i] != NULL && i < 9) {
                                 i++;
                                 args[i] = strtok(NULL, " ");
                         }
