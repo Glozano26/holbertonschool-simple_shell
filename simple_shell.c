@@ -65,12 +65,38 @@ int main()
                                 args[i] = strtok(NULL, " ");
                         }
                         args[i] = NULL; /* Termina la lista de argumentos */
-                        /* Ejecuta el comando */
-                        execve(args[0], args, NULL);
-                        perror("./shell");
-                        exit(1);
-                }
-                else
+                        
+			// Verifica si el comando es ejecutable antes de hacer el fork
+			char *path = getenv("PATH");
+			char *token = strtok(path, ":");
+			int command_found = 0;
+
+			while (token != NULL)
+			{
+				char command_path[100]; // Ajusta el tamaño según tus necesidades
+				snprintf(command_path, sizeof(command_path), "%s/%s", token, args[0]);
+
+				if (access(command_path, X_OK) == 0) // Comprueba si el comando es ejecutable
+				{
+					command_found = 1;
+					break;
+				}
+
+				token = strtok(NULL, ":");
+			}
+
+			if (!command_found)
+			{
+				fprintf(stderr, "Command not found: %s\n", args[0]);
+				exit(1);
+			}
+
+			/* Ejecuta el comando */
+			execve(command_path, args, NULL);
+			perror("execve");
+			exit(1);
+		}	
+		else
                 {
                         wait(&status);
                 }
