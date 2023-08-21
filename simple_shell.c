@@ -15,8 +15,8 @@ int main()
 {
         char *line = NULL;
         size_t line_len = 0;
-        char *args[10];
-        int status, i;
+        char *args[10], *path, *token;
+        int status, i, command_found, command_path[1024];
         ssize_t line_read;
         pid_t child_pid;
 
@@ -33,32 +33,45 @@ int main()
                         free(line);
                         exit(0);
                 }
+		*path = getenv("PATH");
+        	*token = strtok(path, ":");
+        	command_found = 0;
 
-                /* Elimina el salto de línea final */
-                if (line_read > 0 && line[line_read - 1] == '\n')
-                {
-                        line[line_read - 1] = '\0';
-                }
-		/* val si es solo una linea de espacios */
-                for (i = 0; line[i] != '\0'; i++)
-                {
-                        if (line[i] != ' ')
+        	while (token != NULL)
+        	{
+			snprintf(command_path, sizeof(command_path), "%s/%s", token, args[0]);
+
+		if (access(command_path, X_OK) == 0)
+		{
+			command_found = 1;
+                	child_pid = fork();
+
+			/* Elimina el salto de línea final */
+			if (line_read > 0 && line[line_read - 1] == '\n')
+			{
+                        	line[line_read - 1] = '\0';
+                	}
+			/* val si es solo una linea de espacios */
+                	for (i = 0; line[i] != '\0'; i++)
+			{
+                        	if (line[i] != ' ')
                                 break;
-                }
-                if (line[i] == '\0') /*solo se cumple si es una cadena de espacios*/
-                        continue;
-                child_pid = fork();
-                if (child_pid == -1)
-                {
-                        perror("Fork failed");
-                        exit(1);
-                }
-                else if (child_pid == 0)
-                { /* Código del proceso hijo */
+             		}
+			if (line[i] == '\0') /*solo se cumple si es una cadena de espacios*/
+                        	continue;
+                		child_pid = fork();
+			if (child_pid == -1)
+                	{
+                        	perror("Fork failed");
+                        	exit(1);
+               		}
+			else if (child_pid == 0)
+			{ /* Código del proceso hijo */
                         /* Analiza la línea de comandos en argumentos */
-                        int i = 0;
-                        args[i] = strtok(line, " ");
-                        while (args[i] != NULL) {
+                        	int i = 0;
+                        	args[i] = strtok(line, " ");
+                        while (args[i] != NULL)
+			{
                                 i++;
                                 args[i] = strtok(NULL, " ");
                         }
@@ -67,11 +80,13 @@ int main()
                         execve(args[0], args, NULL);
                         perror("./shell");
                         exit(1);
-                }
-                else
-                {
-                        wait(&status);
-                }
+                	}
+                	else
+                	{
+                        	wait(&status);
+				break;
+                	}
+		}	
         }
         return (0);
 }
