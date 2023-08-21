@@ -13,11 +13,11 @@
 
 int main()
 {
-        char *line = NULL, *path, *token;
+        char *line = NULL;
         size_t line_len = 0;
         char *args[10], command_path[1024];
-        int status, i, command_found;
-        ssize_t line_read;
+        int status, i, command_found = 1;
+	ssize_t line_read;
         pid_t child_pid;
 
         while (1)
@@ -33,8 +33,8 @@ int main()
                         free(line);
                         exit(0);
                 }
-		*path = getenv("PATH");
-        	*token = strtok(path, ":");
+		char *path = getenv("PATH");
+        	char *token = strtok(path, ":");
         	command_found = 0;
 
         	while (token != NULL)
@@ -43,7 +43,6 @@ int main()
 
 		if (access(command_path, X_OK) == 0)
 		{
-			command_found = 1;
                 	child_pid = fork();
 
 			/* Elimina el salto de línea final */
@@ -57,9 +56,11 @@ int main()
                         	if (line[i] != ' ')
                                 break;
              		}
-			if (line[i] == '\0') /*solo se cumple si es una cadena de espacios*/
+			if (line[i] == '\0')
+			{/*solo se cumple si es una cadena de espacios*/
                         	continue;
                 		child_pid = fork();
+			}
 			if (child_pid == -1)
                 	{
                         	perror("Fork failed");
