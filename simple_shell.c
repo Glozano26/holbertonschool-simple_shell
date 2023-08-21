@@ -16,7 +16,7 @@ int main()
         char *line = NULL;
         size_t line_len = 0;
         char *args[10];
-        int status;
+        int status, i;
         ssize_t line_read;
         pid_t child_pid;
 
