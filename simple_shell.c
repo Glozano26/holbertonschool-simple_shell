@@ -15,8 +15,8 @@ int main()
 {
         char *line = NULL;
         size_t line_len = 0;
-        char *args[10], command_path[1024];
-        int status, i, command_found = 1;
+        char *args[10], *path, *token, command_path[1024];
+        int status, i, command_found = 0;
 	ssize_t line_read;
         pid_t child_pid;
 
@@ -33,9 +33,8 @@ int main()
                         free(line);
                         exit(0);
                 }
-		char *path = getenv("PATH");
-        	char *token = strtok(path, ":");
-        	command_found = 0;
+		*path = getenv("PATH");
+        	*token = strtok(path, ":");
 
         	while (token != NULL)
         	{
@@ -43,6 +42,7 @@ int main()
 
 			if (access(command_path, X_OK) == 0)
 			{
+				command_found = 1;
                 		child_pid = fork();
 
 				/* Elimina el salto de línea final */
