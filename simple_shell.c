@@ -13,10 +13,10 @@
 
 int main()
 {
-        char *line = NULL;
+        char *line = NULL, *path, *token;
         size_t line_len = 0;
-        char *args[10], *path, *token;
-        int status, i, command_found, command_path[1024];
+        char *args[10], command_path[1024];
+        int status, i, command_found;
         ssize_t line_read;
         pid_t child_pid;
 
