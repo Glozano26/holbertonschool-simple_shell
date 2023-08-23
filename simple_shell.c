@@ -27,7 +27,15 @@ int findpath(char *argument0, char *newpath)
         }
         return (1);
 }
+int exit_builtin(char **args)
+{
+    if (args[1] != NULL) {
+        fprintf(stderr, "exit: too many arguments\n");
+        return 1;
+    }
 
+    exit(0);
+}
 
 /**
  * main - main function.
