@@ -4,7 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
-extern char **environ;
+
 
 /**
  * findpath - find the path directory of the function
@@ -43,8 +43,8 @@ int main()
         int status;
         ssize_t line_read;
         pid_t child_pid;
-        int i, exit_status;
-	
+        int i;
+
         while (1)
         {
                 if (isatty(fileno(stdin)))
@@ -94,40 +94,17 @@ int main()
                         {
                                 char newpath[50];
                                 if (findpath(args[0], newpath) == 0)
-				{
-                         		args[0] = newpath;
-				
-					/* Ejecuta el comando */
-					execve(args[0], args, environ);
-                    			perror("./shell");
-                    			exit(1);
-				}
-				else
-				{
-				
-					fprintf(stderr, "./hsh: 1: %s", args[0]);
-					exit(127);
-				}			
-       
+                                        args[0] = newpath;
                         }
-			else
-			{
-				execve(args[0], args, environ);
-                		perror("./shell");
-                		exit(127);
-            		}
-		}
-		else
-		{
-			waitpid(child_pid, &status, 0);
-            		if (WIFEXITED(status))
-            		{
-                		exit_status = WEXITSTATUS(status);
-                		printf("status: %d\n", exit_status);
-            		}
-       		
-		}                       
-                       
-	}
+                        /* Ejecuta el comando */
+                        execve(args[0], args, NULL);
+                        perror("./shell");
+                        exit(1);
+                }
+                else
+                {
+                        wait(&status);
+                }
+        }
         return (0);
 }
