@@ -72,6 +72,8 @@ int main()
                 }
                 if (line[i] == '\0') /*solo se cumple si es una cadena de espacios*/
                         continue;
+		if (strcmp(line, "exit") == 0)
+			exit(0);
 
                 child_pid = fork();
                 if (child_pid == -1)
