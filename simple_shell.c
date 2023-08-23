@@ -18,7 +18,7 @@ int findpath(char *argument0, char *newpath)
 
         while (token != NULL)
         {
-                snprintf(newpath, 50, "%s/%s", token, argument0);
+                snprintf(newpath, 50, "%s/%s", token, args[0]);
                 if (access(newpath, X_OK) == 0)
                 {
                         return (0);
