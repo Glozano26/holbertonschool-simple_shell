@@ -44,8 +44,7 @@ int main()
         ssize_t line_read;
         pid_t child_pid;
         int i;
-	setenv("PATH", "", 1);
-
+	
         while (1)
         {
                 if (isatty(fileno(stdin)))
@@ -95,7 +94,15 @@ int main()
                         {
                                 char newpath[50];
                                 if (findpath(args[0], newpath) == 0)
-                                        args[0] = newpath;
+				
+                         		args[0] = newpath;
+			
+				else
+				{
+					fprintf(stderr, "./hsh: 1: %s", args[0]);
+					exit(status);
+				}			
+       
                         }
                         /* Ejecuta el comando */
                         execve(args[0], args, environ);
