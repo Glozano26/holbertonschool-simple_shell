@@ -44,6 +44,7 @@ int main()
         ssize_t line_read;
         pid_t child_pid;
         int i;
+	setenv("PATH", "", 1);
 
         while (1)
         {
