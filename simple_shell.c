@@ -51,7 +51,7 @@ int main()
         int status;
         ssize_t line_read;
         pid_t child_pid;
-        int i;
+        int i = 0;
 
         while (1)
         {
@@ -80,9 +80,28 @@ int main()
                 }
                 if (line[i] == '\0') /*solo se cumple si es una cadena de espacios*/
                         continue;
-		if (strcmp(line, "exit") == 0)
-			exit(0);
 
+		
+		args[i] = strtok(line, " ");
+		while (args[i] != NULL)
+		{
+			i++;
+			args[i] = strtok(NULL, " ");
+		}
+		args[i] = NULL; /* Termina la lista de argumentos */
+		
+		/* Valida si debe buscar la ruta en el PAHT */
+        	if (args[0] && !strchr(args[0], '/'))
+        	{
+            		char newpath[50];
+            		if (findpath(args[0], newpath) == 0)
+                	args[0] = newpath;
+        	}
+		/* Si el primer argumento es exit, llama a la funcion exit_builtin() */
+        	if (strcmp(args[0], "exit") == 0)
+		{
+            		exit_builtin(args);
+       		}
                 child_pid = fork();
                 if (child_pid == -1)
                 {
@@ -90,22 +109,7 @@ int main()
                         exit(1);
                 }
                 else if (child_pid == 0)
-                { /* Codigo del proceso hijo */
-                        /* Analiza la linea de comandos en argumentos */
-                        int i = 0;
-                        args[i] = strtok(line, " ");
-                        while (args[i] != NULL) {
-                                i++;
-                                args[i] = strtok(NULL, " ");
-                        }
-                        args[i] = NULL; /* Termina la lista de argumentos */
-                        /*Valida si debe buscar la ruta en el PAHT*/
-                        if (args[0] && !strchr(args[0], '/'))
-                        {
-                                char newpath[50];
-                                if (findpath(args[0], newpath) == 0)
-                                        args[0] = newpath;
-                        }
+                {	/*codigo del proceso hijo*/
                         /* Ejecuta el comando */
                         execve(args[0], args, NULL);
                         perror("./shell");
